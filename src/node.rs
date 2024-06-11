@@ -1,9 +1,9 @@
 //! HTML nodes.
+#[cfg(not(feature = "deterministic"))]
+use hashbrown::{HashMap, hash_map::Iter as HashMapIter};
+#[cfg(not(feature = "deterministic"))]
+use std::collections::hash_map::RandomState;
 
-#[cfg(not(feature = "deterministic"))]
-use ahash::AHashMap as HashMap;
-#[cfg(not(feature = "deterministic"))]
-use std::collections::hash_map;
 use std::fmt;
 use std::ops::Deref;
 use std::slice::Iter as SliceIter;
@@ -12,8 +12,11 @@ use crate::{CaseSensitivity, StrTendril};
 use html5ever::{Attribute, LocalName, QualName};
 use once_cell::unsync::OnceCell;
 
+/// A custom hash map using `RandomState` for HashDoS resistance.
+type SecureHashMap<K, V> = HashMap<K, V, RandomState>;
+
 /// An HTML node.
-// `Element` is usally the most common variant and hence boxing it
+// `Element` is usually the most common variant and hence boxing it
 // will most likely not improve performance overall.
 #[allow(variant_size_differences)]
 #[derive(Clone, PartialEq, Eq)]
@@ -219,7 +222,7 @@ pub type Attributes = indexmap::IndexMap<QualName, StrTendril>;
 /// Please enable the `deterministic` feature for order-preserving
 /// (de)serialization.
 #[cfg(not(feature = "deterministic"))]
-pub type Attributes = HashMap<QualName, StrTendril>;
+pub type Attributes = SecureHashMap<QualName, StrTendril>;
 
 /// An HTML element.
 #[derive(Clone, PartialEq, Eq)]
@@ -330,7 +333,7 @@ pub type AttributesIter<'a> = indexmap::map::Iter<'a, QualName, StrTendril>;
 
 /// An iterator over a node's attributes.
 #[cfg(not(feature = "deterministic"))]
-pub type AttributesIter<'a> = hash_map::Iter<'a, QualName, StrTendril>;
+pub type AttributesIter<'a> = HashMapIter<'a, QualName, StrTendril>;
 
 /// Iterator over attributes.
 #[allow(missing_debug_implementations)]
