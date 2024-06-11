@@ -1,3 +1,9 @@
+### --- MODIFIED FOR WIDER WASM COMPATIBILITY ---
+
+[Removed ahash dependency](https://github.com/bradyjoslin/scraper/commit/282463ad0bc4c627511ba424acfb595709b3d59d), [this workaround](https://github.com/causal-agent/scraper/pull/146#issuecomment-1736000074) doesn't work for [Extism](https://extism.org) since Extism doesnt have the JS environment in the host.
+
+---
+
 # scraper
 
 [![crates.io](https://img.shields.io/crates/v/scraper?color=dark-green)][crate]
